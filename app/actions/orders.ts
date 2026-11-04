@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/config";
-import { getSettings } from "@/lib/data";
+import { getOrderSettings } from "@/lib/data";
 import {
   calculateDeliveryCharge,
   calculateDiscount,
@@ -16,7 +16,7 @@ import {
   roundMoney,
 } from "@/lib/pricing";
 import { rateLimit } from "@/lib/rate-limit";
-import { normalizePhone, safeNumber, todayISO } from "@/lib/utils";
+import { normalizePhone, safeNumber } from "@/lib/utils";
 import {
   flattenZodErrors,
   lookupSchema,
@@ -159,7 +159,7 @@ export async function placeOrderAction(
   }
 
   const admin = createSupabaseAdminClient();
-  const settings = await getSettings();
+  const settings = await getOrderSettings();
 
   if (!settings.payment_methods.includes(parsed.data.paymentMethod)) {
     return { ok: false, message: "Please choose an available payment method." };
@@ -577,12 +577,15 @@ export async function getOrderByToken(token: string) {
   return data as Order;
 }
 
-export async function markWhatsAppOpened(orderId: string) {
-  if (!isSupabaseAdminConfigured || !orderId) return;
+/**
+ * Records that the customer opened the WhatsApp confirmation link. This is a
+ * soft signal for the admin dashboard only — it never changes the order status.
+ */
+export async function markWhatsAppOpened(token: string) {
+  if (!isSupabaseAdminConfigured || !token) return;
   const admin = createSupabaseAdminClient();
-  await admin.from("orders").update({ whatsapp_opened: true }).eq("id", orderId);
-}
-
-export async function getTodayDateForClient() {
-  return todayISO();
+  await admin
+    .from("orders")
+    .update({ whatsapp_opened: true })
+    .eq("lookup_token", token);
 }

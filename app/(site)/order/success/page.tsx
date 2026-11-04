@@ -13,6 +13,7 @@ import {
 import { getOrderByToken } from "@/app/actions/orders";
 import { ClearCartOnMount } from "@/components/site/clear-cart-on-mount";
 import { CopyOrderId } from "@/components/site/copy-order-id";
+import { WhatsAppConfirmLink } from "@/components/site/whatsapp-confirm-link";
 import { getSettings } from "@/lib/data";
 import { buildWhatsAppLink, statusLabel } from "@/lib/constants";
 import { formatDate, formatPKR } from "@/lib/utils";
@@ -239,15 +240,14 @@ export default async function OrderSuccessPage({
               </ol>
 
               <div className="mt-7 space-y-2">
-                <a
+                <WhatsAppConfirmLink
+                  token={token ?? ""}
                   href={buildWhatsAppLink(settings.whatsapp, whatsappMessage)}
-                  target="_blank"
-                  rel="noreferrer"
                   className="btn-whatsapp w-full"
                 >
                   <MessageCircle className="size-4" />
                   Confirm on WhatsApp
-                </a>
+                </WhatsAppConfirmLink>
                 <a
                   href={`tel:${settings.phone.replace(/[^\d+]/g, "")}`}
                   className="btn border border-cream-50/20 text-cream-50 hover:bg-cream-50/10"

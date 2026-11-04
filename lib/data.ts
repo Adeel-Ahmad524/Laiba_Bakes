@@ -2,7 +2,11 @@ import "server-only";
 
 import { cache } from "react";
 import { createSupabaseServerClient } from "./supabase/server";
-import { isSupabaseConfigured } from "./supabase/config";
+import { createSupabaseAdminClient } from "./supabase/admin";
+import {
+  isSupabaseAdminConfigured,
+  isSupabaseConfigured,
+} from "./supabase/config";
 import {
   fallbackCakeSizes,
   fallbackCategories,
@@ -18,6 +22,7 @@ import type {
   Deal,
   DecorationOption,
   Product,
+  PublicBusinessSettings,
 } from "./types";
 import { safeNumber } from "./utils";
 
@@ -33,11 +38,58 @@ function normalizeProduct(row: Record<string, unknown>): Product {
   };
 }
 
-export const getSettings = cache(async (): Promise<BusinessSettings> => {
-  if (!isSupabaseConfigured) return fallbackSettings;
+function toPublicSettings(settings: BusinessSettings): PublicBusinessSettings {
+  const publicSettings: Partial<BusinessSettings> = { ...settings };
+  delete publicSettings.profit_per_pound;
+  return publicSettings as PublicBusinessSettings;
+}
+
+function normalizePublicSettings(
+  data: Record<string, unknown>,
+): PublicBusinessSettings {
+  return {
+    ...toPublicSettings(fallbackSettings),
+    ...(data as unknown as PublicBusinessSettings),
+    delivery_charge: safeNumber(data.delivery_charge),
+    free_delivery_threshold: safeNumber(data.free_delivery_threshold),
+    minimum_order: safeNumber(data.minimum_order),
+    payment_methods: Array.isArray(data.payment_methods)
+      ? (data.payment_methods as string[])
+      : fallbackSettings.payment_methods,
+  };
+}
+
+/**
+ * Public settings are read from a database view that excludes the private
+ * profit target, so the value can never reach an anonymous client.
+ */
+export const getSettings = cache(async (): Promise<PublicBusinessSettings> => {
+  if (!isSupabaseConfigured) return toPublicSettings(fallbackSettings);
   try {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
+      .from("public_business_settings")
+      .select("*")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data) return toPublicSettings(fallbackSettings);
+    return normalizePublicSettings(data);
+  } catch (error) {
+    console.error("getSettings failed, using fallbacks:", error);
+    return toPublicSettings(fallbackSettings);
+  }
+});
+
+/**
+ * Full settings including the private profit target. Used only by the order
+ * server action. Never pass this object to a Client Component.
+ */
+export const getOrderSettings = cache(async (): Promise<BusinessSettings> => {
+  if (!isSupabaseAdminConfigured) return fallbackSettings;
+  try {
+    const admin = createSupabaseAdminClient();
+    const { data, error } = await admin
       .from("business_settings")
       .select("*")
       .order("created_at", { ascending: true })
@@ -50,13 +102,16 @@ export const getSettings = cache(async (): Promise<BusinessSettings> => {
       delivery_charge: safeNumber(data.delivery_charge),
       free_delivery_threshold: safeNumber(data.free_delivery_threshold),
       minimum_order: safeNumber(data.minimum_order),
-      profit_per_pound: safeNumber(data.profit_per_pound),
+      profit_per_pound: safeNumber(
+        data.profit_per_pound,
+        fallbackSettings.profit_per_pound,
+      ),
       payment_methods: Array.isArray(data.payment_methods)
         ? data.payment_methods
         : fallbackSettings.payment_methods,
     };
   } catch (error) {
-    console.error("getSettings failed, using fallbacks:", error);
+    console.error("getOrderSettings failed, using fallbacks:", error);
     return fallbackSettings;
   }
 });

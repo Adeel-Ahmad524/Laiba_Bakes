@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { Logo } from "./logo";
-import type { BusinessSettings } from "@/lib/types";
+import type { PublicBusinessSettings } from "@/lib/types";
 import { NAV_LINKS } from "@/lib/constants";
 import { displayPhone } from "@/lib/utils";
 
-export function SiteFooter({ settings }: { settings: BusinessSettings }) {
+export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
   return (
     <footer className="relative overflow-hidden bg-chocolate-900 text-cream-100">
       <div className="absolute -right-32 -top-40 size-[420px] rounded-full border border-gold-300/10" />

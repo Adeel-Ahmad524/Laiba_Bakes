@@ -96,6 +96,12 @@ export interface BusinessSettings {
   updated_at?: string;
 }
 
+/**
+ * Settings that are safe to send to the public website and browser bundles.
+ * `profit_per_pound` is deliberately excluded — it is admin-only data.
+ */
+export type PublicBusinessSettings = Omit<BusinessSettings, "profit_per_pound">;
+
 export interface CartItem {
   key: string;
   productId: string;

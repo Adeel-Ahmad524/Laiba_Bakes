@@ -124,6 +124,7 @@ The SQL files are in `supabase/migrations/`:
 
 1. `20261103090000_initial_schema.sql` — tables, indexes, triggers, RLS policies and storage buckets
 2. `20261103090100_seed_catalogue.sql` — initial categories, products, sizes, decorations, deals and business settings
+3. `20261103090200_public_settings_view.sql` — public settings view that excludes the private profit target
 
 **Option A — Supabase CLI (recommended)**
 
@@ -238,7 +239,8 @@ Enable Supabase’s scheduled backups (or a paid plan with point-in-time recover
 ## 6. Security notes
 
 - Admin routes are protected twice: middleware checks the Supabase session and `admin_users` membership, and every admin page/layout/server action calls `requireAdmin()`.
-- RLS is enabled on every table. Public users can read only active catalogue rows and public business settings. Customer, order and message data are not readable by anonymous users.
+- RLS is enabled on every table. Public users can read only active catalogue rows. Customer, order and message data are not readable by anonymous users.
+- The public website reads business settings from the `public_business_settings` view, which excludes `profit_per_pound`. Anonymous users cannot select the base `business_settings` table, so the private profit target is never exposed through the anon key or a client bundle.
 - All writes go through server actions. The service role key is imported only by `lib/supabase/admin.ts`, which is marked `server-only`.
 - Order totals, discounts, delivery charges and profit are recomputed on the server; client-submitted totals are ignored.
 - Order lookup requires the order number **and** the normalised phone number. Errors do not reveal whether the order or the phone number was wrong.

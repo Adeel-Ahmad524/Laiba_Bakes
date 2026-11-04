@@ -27,7 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { CartItem, CakeSize, Deal, DecorationOption, Product, BusinessSettings } from "@/lib/types";
+import type { CartItem, CakeSize, Deal, DecorationOption, Product, PublicBusinessSettings } from "@/lib/types";
 import {
   placeOrderAction,
   type OrderActionState,
@@ -140,7 +140,7 @@ export function OrderPageClient({
   sizes: CakeSize[];
   decorations: DecorationOption[];
   deals: Deal[];
-  settings: BusinessSettings;
+  settings: PublicBusinessSettings;
   presetProductSlug?: string;
   presetPounds?: number;
   initialType: "standard" | "custom";
