@@ -82,11 +82,6 @@ export const orderFormSchema = z
     }
   });
 
-export const lookupSchema = z.object({
-  orderId: z.string().trim().min(4, "Enter your order ID.").max(40),
-  phone: phoneSchema,
-});
-
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name.").max(80),
   email: z.string().trim().email("Please enter a valid email address.").max(120),
@@ -104,90 +99,6 @@ export const contactSchema = z.object({
   message: z.string().trim().min(10, "Please tell us a little more.").max(3000),
   website: z.string().max(0).optional().or(z.literal("")),
   startedAt: z.string().optional(),
-});
-
-export const adminLoginSchema = z.object({
-  email: z.string().trim().email("Enter a valid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-});
-
-export const productSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  slug: z
-    .string()
-    .trim()
-    .min(2)
-    .max(120)
-    .regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers and hyphens."),
-  description: z.string().trim().max(1000).optional().or(z.literal("")),
-  categoryId: z.string().trim().optional().or(z.literal("")),
-  flavor: z.string().trim().max(80).optional().or(z.literal("")),
-  price: z.coerce.number().min(0, "Price cannot be negative."),
-  pricingType: z.enum(["per_pound", "fixed"]),
-  imageUrl: z.string().trim().optional().or(z.literal("")),
-  isFeatured: z.string().optional(),
-  isActive: z.string().optional(),
-  sortOrder: z.coerce.number().int().default(0),
-});
-
-export const categorySchema = z.object({
-  name: z.string().trim().min(2).max(80),
-  slug: z
-    .string()
-    .trim()
-    .min(2)
-    .max(100)
-    .regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers and hyphens."),
-  description: z.string().trim().max(500).optional().or(z.literal("")),
-  imageUrl: z.string().trim().optional().or(z.literal("")),
-  sortOrder: z.coerce.number().int().default(0),
-  isActive: z.string().optional(),
-});
-
-export const dealSchema = z.object({
-  title: z.string().trim().min(2).max(100),
-  slug: z
-    .string()
-    .trim()
-    .min(2)
-    .max(120)
-    .regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers and hyphens."),
-  description: z.string().trim().max(1000).optional().or(z.literal("")),
-  code: z.string().trim().max(30).optional().or(z.literal("")),
-  discountType: z.enum(["percentage", "fixed"]),
-  discountValue: z.coerce.number().min(0),
-  minimumOrder: z.coerce.number().min(0).default(0),
-  imageUrl: z.string().trim().optional().or(z.literal("")),
-  startsAt: z.string().optional().or(z.literal("")),
-  endsAt: z.string().optional().or(z.literal("")),
-  isActive: z.string().optional(),
-});
-
-export const settingsSchema = z.object({
-  businessName: z.string().trim().min(2).max(100),
-  tagline: z.string().trim().max(160).optional().or(z.literal("")),
-  address: z.string().trim().min(5).max(300),
-  phone: z.string().trim().min(7).max(30),
-  whatsapp: z.string().trim().min(7).max(30),
-  email: z.string().trim().email().max(120),
-  deliveryCharge: z.coerce.number().min(0),
-  freeDeliveryThreshold: z.coerce.number().min(0),
-  minimumOrder: z.coerce.number().min(0),
-  profitPerPound: z.coerce.number().min(0),
-  paymentMethods: z.string().trim().min(2),
-  openingHours: z.string().trim().max(160).optional().or(z.literal("")),
-  announcement: z.string().trim().max(240).optional().or(z.literal("")),
-  mapEmbedUrl: z.string().trim().max(1000).optional().or(z.literal("")),
-  instagramUrl: z.string().trim().max(300).optional().or(z.literal("")),
-  facebookUrl: z.string().trim().max(300).optional().or(z.literal("")),
-});
-
-export const decorationSchema = z.object({
-  name: z.string().trim().min(2).max(80),
-  description: z.string().trim().max(300).optional().or(z.literal("")),
-  charge: z.coerce.number().min(0),
-  sortOrder: z.coerce.number().int().default(0),
-  isActive: z.string().optional(),
 });
 
 export function flattenZodErrors(error: z.ZodError) {

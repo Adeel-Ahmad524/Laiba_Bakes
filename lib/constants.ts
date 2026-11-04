@@ -77,7 +77,6 @@ export const NAV_LINKS = [
   { href: "/deals", label: "Special Deals" },
   { href: "/custom-cakes", label: "Custom Cake Orders" },
   { href: "/about", label: "About Us" },
-  { href: "/my-orders", label: "My Orders" },
   { href: "/contact", label: "Contact Us" },
 ] as const;
 

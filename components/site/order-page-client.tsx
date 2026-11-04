@@ -377,7 +377,7 @@ export function OrderPageClient({
         </div>
         <div className="flex items-center gap-2 rounded-full border border-chocolate/10 bg-white px-4 py-2 text-[10px] font-semibold text-chocolate/50">
           <ShieldCheck className="size-3.5 text-gold-500" />
-          Secure server-validated pricing
+          Server-validated pricing
         </div>
       </div>
 
@@ -1064,7 +1064,7 @@ export function OrderPageClient({
 
               <div className="mt-4 flex items-center justify-center gap-1.5 text-[9px] text-chocolate/35">
                 <ShieldCheck className="size-3" />
-                Your information is stored securely and never sold.
+                Your information is sent securely to our team and never sold.
               </div>
             </div>
           </div>

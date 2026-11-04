@@ -128,9 +128,7 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
           </p>
           <div className="flex items-center gap-5">
             <span>Prices in PKR</span>
-            <Link href="/admin/login" className="transition hover:text-cream-100">
-              Staff login
-            </Link>
+            <span>Baked fresh in Dera Ismail Khan</span>
           </div>
         </div>
       </div>

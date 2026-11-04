@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   contactSchema,
-  dealSchema,
-  lookupSchema,
   orderFormSchema,
-  productSchema,
+  orderItemInputSchema,
 } from "@/lib/validation";
 
 function futureDate(days = 2) {
@@ -90,18 +88,25 @@ describe("orderFormSchema", () => {
   });
 });
 
-describe("lookupSchema", () => {
-  it("accepts an order id and phone", () => {
+describe("orderItemInputSchema", () => {
+  it("accepts a cake with a size and quantity", () => {
     expect(
-      lookupSchema.safeParse({ orderId: "LB-261104-ABC123", phone: "0300-5477201" })
-        .success,
+      orderItemInputSchema.safeParse({
+        productId: "prod-chocolate",
+        pounds: 2,
+        quantity: 1,
+      }).success,
     ).toBe(true);
   });
 
-  it("rejects a missing order id", () => {
-    expect(lookupSchema.safeParse({ orderId: "", phone: "0300-5477201" }).success).toBe(
-      false,
-    );
+  it("rejects a zero quantity", () => {
+    expect(
+      orderItemInputSchema.safeParse({
+        productId: "prod-chocolate",
+        pounds: 2,
+        quantity: 0,
+      }).success,
+    ).toBe(false);
   });
 });
 
@@ -130,42 +135,5 @@ describe("contactSchema", () => {
         website: "",
       }).success,
     ).toBe(false);
-  });
-});
-
-describe("admin schemas", () => {
-  it("validates a product slug", () => {
-    const result = productSchema.safeParse({
-      name: "Chocolate Cake",
-      slug: "Chocolate Cake",
-      description: "",
-      categoryId: "",
-      flavor: "Chocolate",
-      price: "1100",
-      pricingType: "per_pound",
-      imageUrl: "",
-      sortOrder: "0",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("coerces numeric deal values", () => {
-    const result = dealSchema.safeParse({
-      title: "Weekend offer",
-      slug: "weekend-offer",
-      description: "",
-      code: "WEEKEND10",
-      discountType: "percentage",
-      discountValue: "10",
-      minimumOrder: "1000",
-      imageUrl: "",
-      startsAt: "",
-      endsAt: "",
-    });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.discountValue).toBe(10);
-      expect(result.data.minimumOrder).toBe(1000);
-    }
   });
 });

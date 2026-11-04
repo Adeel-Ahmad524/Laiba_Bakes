@@ -8,9 +8,9 @@ import type {
 } from "./types";
 
 /**
- * These records power the site before Supabase is connected and keep local
- * previews useful. Once SUPABASE env vars are configured, all reads come from
- * the database instead. Orders always require Supabase to be configured.
+ * The built-in catalogue and business settings. There is no database, so these
+ * records are the single source of truth for the public website and checkout.
+ * Edit this file to change products, prices, sizes, decorations or deals.
  */
 export const fallbackCategories: Category[] = [
   {

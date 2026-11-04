@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  ArrowRight,
   CheckCircle2,
   Clock3,
   MapPin,
@@ -10,58 +9,75 @@ import {
   ReceiptText,
   Truck,
 } from "lucide-react";
-import { getOrderByToken } from "@/app/actions/orders";
 import { ClearCartOnMount } from "@/components/site/clear-cart-on-mount";
 import { CopyOrderId } from "@/components/site/copy-order-id";
-import { WhatsAppConfirmLink } from "@/components/site/whatsapp-confirm-link";
 import { getSettings } from "@/lib/data";
-import { buildWhatsAppLink, statusLabel } from "@/lib/constants";
-import { formatDate, formatPKR } from "@/lib/utils";
+import { buildWhatsAppLink } from "@/lib/constants";
+import { formatDate, formatPKR, safeNumber } from "@/lib/utils";
 
 export const metadata = {
   title: "Order received",
   robots: { index: false, follow: false },
 };
 
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default async function OrderSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { token } = await searchParams;
-  const [order, settings] = await Promise.all([
-    token ? getOrderByToken(token) : Promise.resolve(null),
-    getSettings(),
-  ]);
+  const params = await searchParams;
+  const settings = await getSettings();
 
-  if (!order) {
+  const orderNumber = first(params.order) ?? "";
+  const name = first(params.name) ?? "";
+  const total = safeNumber(first(params.total));
+  const requiredDate = first(params.date) ?? "";
+  const requiredTime = first(params.time) ?? "";
+  const deliveryType = first(params.delivery) === "pickup" ? "pickup" : "delivery";
+  const paymentMethod = first(params.payment) ?? "";
+  const itemCount = safeNumber(first(params.items));
+  const referenceStatus = first(params.ref) ?? "none";
+
+  const whatsappMessage = `Assalam-o-Alaikum Laiba Bakes! I've just placed order ${orderNumber}${total ? ` (total ${formatPKR(total)})` : ""}. I'd like to confirm a few details.`;
+
+  if (!orderNumber) {
     return (
       <div className="container-luxe flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
-        <span className="flex size-16 items-center justify-center rounded-full bg-cream-200">
-          <ReceiptText className="size-7 text-chocolate/40" />
+        <span className="flex size-16 items-center justify-center rounded-full bg-green-100">
+          <CheckCircle2 className="size-8 text-green-700" />
         </span>
         <h1 className="mt-6 font-display text-4xl text-chocolate">
-          We couldn&apos;t find that order
+          Thank you for your order.
         </h1>
         <p className="mt-3 max-w-md text-sm leading-6 text-chocolate/50">
-          This confirmation link may have expired or is incomplete. If you have
-          your order ID, you can track it from the My Orders page.
+          Your order request has been sent to the bakery. Our team will review it
+          and contact you to confirm the details. Your order is not confirmed
+          until then.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Link href="/my-orders" className="btn-primary">
-            Track my order
-          </Link>
-          <Link href="/contact" className="btn-outline">
-            Contact us
+          <a
+            href={buildWhatsAppLink(
+              settings.whatsapp,
+              "Assalam-o-Alaikum! I have just placed an order and would like to confirm it.",
+            )}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-whatsapp"
+          >
+            <MessageCircle className="size-4" />
+            Message us on WhatsApp
+          </a>
+          <Link href="/cakes" className="btn-outline">
+            Continue shopping
           </Link>
         </div>
       </div>
     );
   }
-
-  const customer = order.customer;
-  const items = order.order_items ?? [];
-  const whatsappMessage = `Assalam-o-Alaikum Laiba Bakes! I've just placed order ${order.order_number}. Total: ${formatPKR(order.total)}. I'd like to confirm a few details.`;
 
   return (
     <>
@@ -74,11 +90,12 @@ export default async function OrderSuccessPage({
           </span>
           <span className="eyebrow mt-6 justify-center">Order received</span>
           <h1 className="display-title mt-4">
-            Thank you, {customer?.name?.split(" ")[0] || "friend"}.
+            Thank you, {name.split(" ")[0] || "friend"}.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-chocolate/55">
-            Your order request has been saved. Our team will review it and contact
-            you to confirm the details. Your order is not confirmed until then.
+            Your order request has been sent to our bakery. Our team will review
+            it and contact you on WhatsApp or by phone to confirm the details.
+            Your order is not confirmed until then.
           </p>
 
           <div className="mx-auto mt-8 flex max-w-md flex-wrap items-center justify-center gap-3 rounded-2xl border border-chocolate/10 bg-white p-4 shadow-card">
@@ -87,16 +104,16 @@ export default async function OrderSuccessPage({
                 Your order ID
               </p>
               <p className="mt-1 font-display text-2xl font-semibold tracking-wide text-chocolate">
-                {order.order_number}
+                {orderNumber}
               </p>
             </div>
             <span className="rounded-full border border-gold-300 bg-gold-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-chocolate">
-              {statusLabel(order.status)}
+              New request
             </span>
           </div>
           <p className="mx-auto mt-3 max-w-md text-[10px] leading-4 text-chocolate/40">
-            Save this order ID. You&apos;ll need it with your phone number to
-            track your order on the My Orders page.
+            Keep this order ID for your records. Our team will quote it when we
+            contact you.
           </p>
         </div>
       </section>
@@ -107,94 +124,66 @@ export default async function OrderSuccessPage({
             <div className="rounded-[1.75rem] border border-chocolate/10 bg-white p-6 shadow-card sm:p-8">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-2xl text-chocolate">
-                  Order details
+                  Order summary
                 </h2>
                 <span className="text-[10px] text-chocolate/40">
-                  {formatDate(order.created_at, true)}
+                  Sent {formatDate(new Date().toISOString(), true)}
                 </span>
               </div>
 
               <div className="mt-5 divide-y divide-chocolate/8">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between gap-3 py-3 text-sm"
-                  >
-                    <div>
-                      <p className="font-medium text-chocolate">{item.product_name}</p>
-                      <p className="text-[10px] text-chocolate/40">
-                        {item.pounds ? `${item.pounds} lb · ` : ""}Qty{" "}
-                        {item.quantity}
-                      </p>
-                    </div>
-                    <p className="font-semibold text-chocolate">
-                      {formatPKR(item.line_total)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 space-y-2 border-t border-chocolate/10 pt-4 text-sm">
-                <div className="flex justify-between text-chocolate/50">
-                  <span>Cakes</span>
-                  <span>{formatPKR(order.subtotal)}</span>
-                </div>
-                {Number(order.additional_total) > 0 ? (
-                  <div className="flex justify-between text-chocolate/50">
-                    <span>Little treats</span>
-                    <span>{formatPKR(order.additional_total)}</span>
-                  </div>
-                ) : null}
-                {Number(order.decoration_charge) > 0 ? (
-                  <div className="flex justify-between text-chocolate/50">
-                    <span>Decoration</span>
-                    <span>{formatPKR(order.decoration_charge)}</span>
-                  </div>
-                ) : null}
-                {Number(order.delivery_charge) > 0 ? (
-                  <div className="flex justify-between text-chocolate/50">
-                    <span>Delivery</span>
-                    <span>{formatPKR(order.delivery_charge)}</span>
-                  </div>
-                ) : null}
-                {Number(order.discount) > 0 ? (
-                  <div className="flex justify-between text-green-700">
-                    <span>Discount</span>
-                    <span>−{formatPKR(order.discount)}</span>
-                  </div>
-                ) : null}
-                <div className="flex items-end justify-between border-t border-chocolate/10 pt-3">
-                  <span className="font-semibold text-chocolate">Total payable</span>
-                  <span className="font-display text-3xl font-semibold text-chocolate">
-                    {formatPKR(order.total)}
+                <div className="flex items-center justify-between gap-3 py-3 text-sm">
+                  <span className="text-chocolate/50">Items</span>
+                  <span className="font-semibold text-chocolate">
+                    {itemCount > 0
+                      ? `${itemCount} item${itemCount === 1 ? "" : "s"}`
+                      : "See order confirmation"}
                   </span>
                 </div>
+                {total > 0 ? (
+                  <div className="flex items-end justify-between gap-3 py-3">
+                    <span className="text-sm font-semibold text-chocolate">
+                      Total payable
+                    </span>
+                    <span className="font-display text-3xl font-semibold text-chocolate">
+                      {formatPKR(total)}
+                    </span>
+                  </div>
+                ) : null}
               </div>
+
+              {referenceStatus === "skipped" ? (
+                <p className="mt-4 rounded-xl bg-amber-50 px-3.5 py-3 text-[11px] leading-5 text-amber-700">
+                  We could not attach your reference image to the order. Please
+                  send it to us on WhatsApp so we can match it to your cake.
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-chocolate/10 bg-white p-5">
                 <div className="flex items-center gap-2">
-                  {order.delivery_type === "delivery" ? (
+                  {deliveryType === "delivery" ? (
                     <Truck className="size-4 text-gold-500" />
                   ) : (
                     <Package className="size-4 text-gold-500" />
                   )}
                   <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-chocolate/40">
-                    {order.delivery_type === "delivery" ? "Delivery" : "Pickup"}
+                    {deliveryType === "delivery" ? "Delivery" : "Pickup"}
                   </p>
                 </div>
                 <p className="mt-2 text-sm font-semibold text-chocolate">
-                  {formatDate(order.required_date)} at {order.required_time}
+                  {requiredDate ? formatDate(requiredDate) : "Date to confirm"}
+                  {requiredTime ? ` at ${requiredTime}` : ""}
                 </p>
-                {order.delivery_type === "delivery" ? (
-                  <p className="mt-1 text-[11px] leading-5 text-chocolate/45">
-                    {customer?.address ?? "Address confirmed by phone"}
-                  </p>
-                ) : (
+                {deliveryType === "pickup" ? (
                   <p className="mt-1 text-[11px] leading-5 text-chocolate/45">
                     <MapPin className="mr-1 inline size-3" />
                     {settings.address}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-[11px] leading-5 text-chocolate/45">
+                    We will confirm your delivery address when we contact you.
                   </p>
                 )}
               </div>
@@ -206,13 +195,10 @@ export default async function OrderSuccessPage({
                   </p>
                 </div>
                 <p className="mt-2 text-sm font-semibold text-chocolate">
-                  {order.payment_method}
-                </p>
-                <p className="mt-1 text-[11px] capitalize text-chocolate/45">
-                  Status: {order.payment_status}
+                  {paymentMethod || "To confirm"}
                 </p>
                 <p className="mt-1 text-[11px] text-chocolate/45">
-                  Contact: {customer?.phone}
+                  Pay on delivery or pickup. No online payment is taken now.
                 </p>
               </div>
             </div>
@@ -240,14 +226,15 @@ export default async function OrderSuccessPage({
               </ol>
 
               <div className="mt-7 space-y-2">
-                <WhatsAppConfirmLink
-                  token={token ?? ""}
+                <a
                   href={buildWhatsAppLink(settings.whatsapp, whatsappMessage)}
+                  target="_blank"
+                  rel="noreferrer"
                   className="btn-whatsapp w-full"
                 >
                   <MessageCircle className="size-4" />
                   Confirm on WhatsApp
-                </WhatsAppConfirmLink>
+                </a>
                 <a
                   href={`tel:${settings.phone.replace(/[^\d+]/g, "")}`}
                   className="btn border border-cream-50/20 text-cream-50 hover:bg-cream-50/10"
@@ -271,17 +258,10 @@ export default async function OrderSuccessPage({
               </div>
               <div className="mt-3 flex items-center gap-3 rounded-xl bg-white p-3">
                 <p className="flex-1 font-display text-xl font-semibold tracking-wide text-chocolate">
-                  {order.order_number}
+                  {orderNumber}
                 </p>
-                <CopyOrderId value={order.order_number} />
+                <CopyOrderId value={orderNumber} />
               </div>
-              <Link
-                href="/my-orders"
-                className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold-500 hover:text-gold-600"
-              >
-                Track this order
-                <ArrowRight className="size-3" />
-              </Link>
             </div>
 
             <Link href="/cakes" className="btn-outline w-full">

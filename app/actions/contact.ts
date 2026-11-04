@@ -1,8 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { isSupabaseAdminConfigured } from "@/lib/supabase/config";
+import { submitToFormspree } from "@/lib/formspree";
 import { rateLimit } from "@/lib/rate-limit";
 import { contactSchema, flattenZodErrors } from "@/lib/validation";
 
@@ -16,14 +15,6 @@ export async function submitContactAction(
   _prevState: ContactActionState,
   formData: FormData,
 ): Promise<ContactActionState> {
-  if (!isSupabaseAdminConfigured) {
-    return {
-      ok: false,
-      message:
-        "The contact form is being set up. Please call or WhatsApp us in the meantime.",
-    };
-  }
-
   const parsed = contactSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -52,21 +43,23 @@ export async function submitContactAction(
     };
   }
 
-  const admin = createSupabaseAdminClient();
-  const { error } = await admin.from("contact_messages").insert({
+  const subject = parsed.data.subject || "General enquiry";
+  const result = await submitToFormspree({
+    subject: `Website enquiry: ${subject}`,
+    form_type: "contact",
     name: parsed.data.name,
     email: parsed.data.email,
-    phone: parsed.data.phone || null,
-    subject: parsed.data.subject || "Website enquiry",
+    phone: parsed.data.phone || "",
+    enquiry_subject: subject,
     message: parsed.data.message,
-    status: "new",
+    submitted_at: new Date().toISOString(),
   });
 
-  if (error) {
-    console.error("Contact message save failed:", error);
+  if (!result.ok) {
     return {
       ok: false,
       message:
+        result.message ??
         "We could not send your message. Please try again or contact us on WhatsApp.",
     };
   }
