@@ -4,7 +4,7 @@ A complete bakery website for **Laiba Bakes**, Dera Ismail Khan. Customers can b
 
 - **Business:** Laiba Bakes
 - **Address:** 10 Civil Lines, Near Police Lines, Dera Ismail Khan, Pakistan
-- **Phone / WhatsApp:** 0300-5477201
+- **Phone / WhatsApp:** 0300-5477207
 - **Email:** gullaiba049@gmail.com
 - **Currency:** PKR
 - **Order form:** <https://formspree.io/f/mljjaljk>

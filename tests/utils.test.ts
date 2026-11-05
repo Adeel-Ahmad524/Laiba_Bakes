@@ -10,22 +10,22 @@ import {
 
 describe("normalizePhone", () => {
   it("converts local Pakistani numbers to international format", () => {
-    expect(normalizePhone("0300-5477201")).toBe("923005477201");
+    expect(normalizePhone("0300-5477207")).toBe("923005477207");
   });
 
   it("keeps already-normalised numbers", () => {
-    expect(normalizePhone("923005477201")).toBe("923005477201");
-    expect(normalizePhone("0092 300 5477201")).toBe("923005477201");
+    expect(normalizePhone("923005477207")).toBe("923005477207");
+    expect(normalizePhone("0092 300 5477207")).toBe("923005477207");
   });
 
   it("handles ten digit mobile numbers", () => {
-    expect(normalizePhone("3005477201")).toBe("923005477201");
+    expect(normalizePhone("3005477207")).toBe("923005477207");
   });
 });
 
 describe("displayPhone", () => {
   it("formats an international number for display", () => {
-    expect(displayPhone("923005477201")).toBe("0300-5477201");
+    expect(displayPhone("923005477207")).toBe("0300-5477207");
   });
 
   it("returns the original value when it cannot format", () => {

@@ -14,8 +14,8 @@ function futureDate(days = 2) {
 function validOrder(overrides: Record<string, unknown> = {}) {
   return {
     name: "Ayesha Khan",
-    phone: "0300-5477201",
-    whatsapp: "0300-5477201",
+    phone: "0300-5477207",
+    whatsapp: "0300-5477207",
     email: "ayesha@example.com",
     address: "House 12, Civil Lines, Dera Ismail Khan",
     deliveryType: "delivery",
@@ -116,7 +116,7 @@ describe("contactSchema", () => {
       contactSchema.safeParse({
         name: "Ali",
         email: "ali@example.com",
-        phone: "0300-5477201",
+        phone: "0300-5477207",
         subject: "Cake enquiry",
         message: "I would like a two pound chocolate cake next week.",
         website: "",

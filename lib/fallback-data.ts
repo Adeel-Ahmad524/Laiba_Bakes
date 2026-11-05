@@ -301,8 +301,8 @@ export const fallbackSettings: BusinessSettings = {
   tagline: "Baked with love, made for your moments.",
   address:
     "10 Civil Lines, Near Police Lines, Dera Ismail Khan, Pakistan",
-  phone: "0300-5477201",
-  whatsapp: "0300-5477201",
+  phone: "0300-5477207",
+  whatsapp: "0300-5477207",
   email: "gullaiba049@gmail.com",
   delivery_charge: 200,
   free_delivery_threshold: 5000,

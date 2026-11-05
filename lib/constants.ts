@@ -80,13 +80,13 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact Us" },
 ] as const;
 
-export const DEFAULT_WHATSAPP = "0300-5477201";
+export const DEFAULT_WHATSAPP = "0300-5477207";
 
 export const BUSINESS = {
   name: "Laiba Bakes",
   address: "10 Civil Lines, Near Police Lines, Dera Ismail Khan, Pakistan",
-  phone: "0300-5477201",
-  whatsapp: "0300-5477201",
+  phone: "0300-5477207",
+  whatsapp: "0300-5477207",
   email: "gullaiba049@gmail.com",
 };
 

@@ -117,7 +117,7 @@ export function ContactForm() {
             name="phone"
             type="tel"
             className="field"
-            placeholder="0300-5477201"
+            placeholder="0300-5477207"
             maxLength={20}
             aria-describedby={state.errors?.phone ? "contact-phone-error" : undefined}
           />

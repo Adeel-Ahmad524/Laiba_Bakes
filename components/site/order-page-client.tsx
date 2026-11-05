@@ -432,7 +432,7 @@ export function OrderPageClient({
                   name="phone"
                   type="tel"
                   className="field"
-                  placeholder="0300-5477201"
+                  placeholder="0300-5477207"
                   required
                   autoComplete="tel"
                   aria-invalid={Boolean(state.errors?.phone)}
@@ -450,7 +450,7 @@ export function OrderPageClient({
                   name="whatsapp"
                   type="tel"
                   className="field"
-                  placeholder="0300-5477201"
+                  placeholder="0300-5477207"
                   required
                   aria-invalid={Boolean(state.errors?.whatsapp)}
                 />

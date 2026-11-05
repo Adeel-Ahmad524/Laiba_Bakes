@@ -8,7 +8,7 @@ const phoneSchema = z
   .refine((value) => {
     const normalized = normalizePhone(value);
     return normalized.length === 12 && normalized.startsWith("923");
-  }, "Please enter a valid Pakistani mobile number (e.g. 0300-5477201).");
+  }, "Please enter a valid Pakistani mobile number (e.g. 0300-5477207).");
 
 export const orderItemInputSchema = z.object({
   productId: z.string().min(1),
