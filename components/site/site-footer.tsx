@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { Logo } from "./logo";
 import type { PublicBusinessSettings } from "@/lib/types";
-import { NAV_LINKS } from "@/lib/constants";
+import { FOOTER_LINKS } from "@/lib/constants";
 import { displayPhone } from "@/lib/utils";
 
 export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
@@ -34,7 +34,7 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
               Explore
             </h3>
             <ul className="mt-5 space-y-3 text-sm">
-              {NAV_LINKS.map((link) => (
+              {FOOTER_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

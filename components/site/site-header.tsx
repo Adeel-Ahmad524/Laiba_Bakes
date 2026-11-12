@@ -84,7 +84,7 @@ export function SiteHeader({
         <div className="container-luxe flex h-[74px] items-center justify-between gap-4">
           <Logo name={businessName} />
 
-          <nav className="hidden items-center gap-5 xl:flex" aria-label="Main navigation">
+          <nav className="hidden items-center gap-6 lg:flex" aria-label="Main navigation">
             {NAV_LINKS.map((link) => {
               const active =
                 link.href === "/"
@@ -125,16 +125,16 @@ export function SiteHeader({
             </Link>
 
             <Link
-              href="/custom-cakes"
+              href="/order"
               className="hidden rounded-full bg-chocolate px-6 py-3 text-xs font-bold tracking-wide text-cream-50 shadow-soft transition hover:-translate-y-0.5 hover:bg-chocolate-900 sm:inline-flex"
             >
-              Order a cake
+              Order now
             </Link>
 
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="flex size-11 items-center justify-center rounded-full border border-chocolate/10 bg-white text-chocolate xl:hidden"
+              className="flex size-11 items-center justify-center rounded-full border border-chocolate/10 bg-white text-chocolate lg:hidden"
               aria-label="Open menu"
               aria-expanded={open}
             >
@@ -146,7 +146,7 @@ export function SiteHeader({
 
       <div
         className={cn(
-          "fixed inset-0 z-[70] transition xl:hidden",
+          "fixed inset-0 z-[70] transition lg:hidden",
           open ? "visible" : "invisible",
         )}
         aria-hidden={!open}
@@ -179,7 +179,7 @@ export function SiteHeader({
           </div>
 
           <nav className="flex-1 overflow-y-auto px-4 py-6" aria-label="Mobile navigation">
-            {NAV_LINKS.map((link, index) => {
+            {NAV_LINKS.map((link) => {
               const active =
                 link.href === "/"
                   ? pathname === "/"
@@ -194,12 +194,7 @@ export function SiteHeader({
                     active ? "text-gold-500" : "text-chocolate hover:text-gold-500",
                   )}
                 >
-                  <span>
-                    <span className="mr-3 font-sans text-[9px] font-bold tracking-widest text-gold-400">
-                      0{index + 1}
-                    </span>
-                    {link.label}
-                  </span>
+                  <span>{link.label}</span>
                   <ChevronRight className="size-4 text-chocolate/30" />
                 </Link>
               );
@@ -213,7 +208,7 @@ export function SiteHeader({
               className="btn-primary w-full"
             >
               <ShoppingBag className="size-4" />
-              View basket {itemCount > 0 ? `(${itemCount})` : ""}
+              Start your order {itemCount > 0 ? `(${itemCount})` : ""}
             </Link>
             <a
               href={`tel:${phone.replace(/[^\d+]/g, "")}`}

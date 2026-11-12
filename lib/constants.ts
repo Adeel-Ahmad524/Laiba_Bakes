@@ -70,14 +70,27 @@ export function statusTone(status: OrderStatus) {
   );
 }
 
+/**
+ * The five links that appear in the main header. Keeping this short makes the
+ * site easier to scan; secondary pages live in the footer.
+ */
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/cakes", label: "Our Cakes" },
+  { href: "/custom-cakes", label: "Custom Cakes" },
+  { href: "/deals", label: "Deals" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+/** Every public page, used by the footer so nothing becomes unreachable. */
+export const FOOTER_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/cakes", label: "Our Cakes" },
   { href: "/categories", label: "Cake Categories" },
-  { href: "/deals", label: "Special Deals" },
-  { href: "/custom-cakes", label: "Custom Cake Orders" },
+  { href: "/custom-cakes", label: "Custom Cakes" },
+  { href: "/deals", label: "Deals" },
   { href: "/about", label: "About Us" },
-  { href: "/contact", label: "Contact Us" },
+  { href: "/contact", label: "Contact" },
 ] as const;
 
 export const DEFAULT_WHATSAPP = "0300-5477207";
